@@ -1,0 +1,6 @@
+{% extends 'trivia/base.html' %}
+{% block jumbotron %}
+        <h3>Que pena! Não foi dessa vez.<span class="glyphicon glyphicon-thumbs-down fail pull-right"></span></h3>
+        <p class="lead">Você acertou {{ acertos }} de {{ total }} questões.</p>
+        <p><a class="btn btn-lg btn-success" href="{% url 'perguntas' %}" role="button">Tentar novamente!</a></p>
+{% endblock %}

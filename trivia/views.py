@@ -122,9 +122,9 @@ def reset(request):
 
 def sucesso(request):
     p = Perguntas(request)
+    if not p.acabou():
+        return redirect('perguntas')
     if request.method == 'GET':
-        if not p.acabou():
-            return redirect('perguntas')
         if p.tem_jogador:
             form = JogadorForm(instance=p.jogador)
         else:
@@ -142,12 +142,16 @@ def sucesso(request):
             p.jogador = jogador.pk
             return redirect('ranking')
     return render(request, 'trivia/sucesso.html', {
-        'acertos': p.sucessos,
-        'total': p.n_perguntas,
         'tempo': p.tempo_final,
         'form': form,
     })
 
 
 def falhou(request):
-    pass
+    p = Perguntas(request)
+    if not p.acabou():
+        return redirect('perguntas')
+    return render(request, 'trivia/falhou.html', {
+        'acertos': p.sucessos,
+        'total': p.n_perguntas,
+    })
