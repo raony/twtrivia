@@ -1,4 +1,5 @@
 from django.db import models
+import random
 
 # Create your models here.
 
@@ -7,6 +8,12 @@ class Pergunta(models.Model):
 
     def __unicode__(self):
         return self.texto
+
+    def respostas_random(self):
+        result = list(self.respostas.all())
+        random.shuffle(result)
+        print result
+        return result
 
 class Resposta(models.Model):
     pergunta = models.ForeignKey(Pergunta, related_name="respostas")

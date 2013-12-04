@@ -1,0 +1,34 @@
+{% extends 'trivia/base.html' %}
+{% load staticfiles %}
+{% block extra_header %}
+        <h1 class="pull-right clock">11:23:234</h1>
+{% endblock %}
+
+{% block jumbotron %}
+        {% for status in estados %}
+        <span class="glyphicon glyphicon-{% if status > 0 %}ok{% elif status == 0 %}minus{% else %}remove{% endif %}-sign signs"></span>
+        {% endfor %}
+        <h3 class="pergunta">{{ pergunta.texto }}</h3>
+        {% for resposta in pergunta.respostas_random %}
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" value="{{ resposta.texto }}" name="resposta">
+          <p><input type="submit" class="btn answer btn-lg btn-default btn-block" value="{{ resposta.texto }}"></p>
+        </form>
+        {% endfor %}
+{% endblock %}
+
+{% block extra_script %}
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="{% static 'trivia/js/timer.js' %}"></script>
+    <script>
+      $(new function() {
+          var timer = new Timer(900);
+          setInterval(function() {
+            $('.clock').text( timer.formatMilliseconds() )
+          }, 0);
+          timer.start();
+      });
+    </script>
+{% endblock %}
+

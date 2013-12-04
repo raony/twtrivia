@@ -23,9 +23,11 @@
 
     <div class="container">
       <div class="header">
+        {% block extra_header %}
         <ul class="nav nav-pills pull-right">
           <li><a href="http://thoughtworks.com" target="_blank">Sobre</a></li>
         </ul>
+        {% endblock %}
         <img class="logo" src="{% static 'trivia/images/twlogo.png' %}" alt="thoughtworks logo">
       </div>
 
@@ -39,7 +41,7 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    {% block scripts %}
+    {% block extra_script %}
     {% endblock %}
   </body>
 </html>

@@ -84,14 +84,28 @@ img.logo {
   line-height: normal;
   font-size: 12px;
 }
+.signs {
+  line-height: normal;
+  font-size: 50px;
+  margin-top: -30px;
+  margin-left: 10px;
+}
 table * {
   font-weight: 150;
   font-size: 14px;
 }
-
 td {
   font-weight: 125;
   text-align: left;
+}
+.glyphicon-ok-sign {
+  color: green;
+}
+.glyphicon-remove-sign {
+  color: red;
+}
+.glyphicon-minus-sign {
+  color: gray;
 }
 
 /* Responsive: Portrait tablets and up */
