@@ -23,7 +23,7 @@
     <script src="{% static 'trivia/js/timer.js' %}"></script>
     <script>
       $(new function() {
-          var timer = new Timer(900);
+          var timer = new Timer({{ tempo }});
           setInterval(function() {
             $('.clock').text( timer.formatMilliseconds() )
           }, 0);

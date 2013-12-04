@@ -1,18 +1,29 @@
+import math
 from django.shortcuts import render, redirect
 from random import randint, shuffle
 from trivia.models import Pergunta, Resposta
+from datetime import datetime
+from dateutil import parser
 
 # Create your views here.
 def home(request):
     return render(request, 'trivia/home.html')
 
 class Perguntas(object):
+
+    ACERTO = 1
+    ERRO = -1
+    VAZIO = 0
+
     def __init__(self, request):
         object.__setattr__(self, 'session', request.session)
+        object.__setattr__(self, 'n_perguntas', 3)
 
     def __getattr__(self, attr):
         if attr == 'perguntas':
             return Pergunta.objects.filter(pk__in=self.session[attr])
+        elif attr == 'tempo_inicial':
+            return parser.parse(self.session[attr])
         return self.session[attr]
 
     def __setattr__(self, name, value):
@@ -21,7 +32,7 @@ class Perguntas(object):
     def preparar_perguntas(self):
         perguntas = list(Pergunta.objects.all())
         shuffle(perguntas)
-        self.perguntas = [p.pk for p in perguntas[:3]]
+        self.perguntas = [p.pk for p in perguntas[:self.n_perguntas]]
     
     def esta_preparado(self):
         return 'estados' in self.session and self.estados[-1] == 0
@@ -31,17 +42,35 @@ class Perguntas(object):
         return self.perguntas[self.indice]
 
     def acertou(self):
-        self.estados[self.indice] = 1
+        self.estados[self.indice] = Perguntas.ACERTO
         self.indice += 1
+        if self.acabou():
+            self.tempo_final = self.tempo_atual
 
     def errou(self):
-        self.estados[self.indice] = -1
+        self.estados[self.indice] = Perguntas.ERRO
         self.indice += 1
 
     def preparar(self):
         self.preparar_perguntas()
-        self.estados = [0,0,0]
+        self.estados = [Perguntas.VAZIO for i in range(self.n_perguntas)]
         self.indice = 0
+        self.tempo_inicial = datetime.today().time().isoformat()
+
+    def finalizou_com_sucesso(self):
+        return all((estado == Perguntas.ACERTO for estado in self.estados))
+
+    def acabou(self):
+        return self.indice >= self.n_perguntas
+
+    @property
+    def tempo_atual(self):
+        return math.floor((datetime.today() - self.tempo_inicial).total_seconds()*1000)
+
+    @property
+    def sucessos(self):
+        return len([x for x in self.estados if x == Perguntas.ACERTO])
+
 
 def perguntas(request):
     p = Perguntas(request)
@@ -52,6 +81,7 @@ def perguntas(request):
             return render(request, 'trivia/questao.html', {
                 'pergunta': p.atual,
                 'estados': p.estados,
+                'tempo': p.tempo_atual,
             })
         else:
             return redirect('home')
@@ -61,8 +91,27 @@ def perguntas(request):
             p.acertou()
         else:
             p.errou()
+
+        if p.acabou():
+            if p.finalizou_com_sucesso():
+                return redirect('sucesso')
+            else:
+                return redirect('falhou')
         return redirect('perguntas')
 
 def reset(request):
     request.session.clear()
     return redirect('home')
+
+def sucesso(request):
+    p = Perguntas(request)
+    if not p.acabou():
+        return redirect('perguntas')
+    return render(request, 'trivia/sucesso.html', {
+        'acertos': p.sucessos,
+        'total': p.n_perguntas,
+        'tempo': p.tempo_final
+    })
+
+def falhou(request):
+    pass
