@@ -24,6 +24,12 @@ class Perguntas(object):
             return Pergunta.objects.filter(pk__in=self.session[attr])
         elif attr == 'tempo_inicial':
             return parser.parse(self.session[attr])
+        elif attr == 'tempo_final':
+            minutos = math.floor(math.floor(self.session[attr]/1000)/60)
+            segundos = math.floor(self.session[attr]/1000) - minutos*60
+            miliseg = self.session[attr] - segundos*1000 - minutos*60000
+
+            return '%d:%02d:%03d'%(minutos, segundos, miliseg)
         return self.session[attr]
 
     def __setattr__(self, name, value):
