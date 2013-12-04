@@ -1,7 +1,8 @@
 import math
 from django.shortcuts import render, redirect
 from random import randint, shuffle
-from trivia.models import Pergunta, Resposta
+from trivia.models import Pergunta, Resposta, Jogador
+from trivia.forms import JogadorForm
 from datetime import datetime
 from dateutil import parser
 
@@ -30,6 +31,8 @@ class Perguntas(object):
             miliseg = self.session[attr] - segundos*1000 - minutos*60000
 
             return '%d:%02d:%03d'%(minutos, segundos, miliseg)
+        elif attr == 'jogador':
+            return Jogador.objects.get(pk=self.session[attr])
         return self.session[attr]
 
     def __setattr__(self, name, value):
@@ -77,6 +80,14 @@ class Perguntas(object):
     def sucessos(self):
         return len([x for x in self.estados if x == Perguntas.ACERTO])
 
+    @property
+    def tem_jogador(self):
+        return 'jogador' in self.session
+
+    @property
+    def tempo_final_raw(self):
+        return self.session['tempo_final']
+
 
 def perguntas(request):
     p = Perguntas(request)
@@ -110,14 +121,33 @@ def reset(request):
     return redirect('home')
 
 def sucesso(request):
-    p = Perguntas(request)
-    if not p.acabou():
-        return redirect('perguntas')
+    if request.method == 'GET':
+        p = Perguntas(request)
+        if not p.acabou():
+            return redirect('perguntas')
+        if not p.tem_jogador:
+            form = JogadorForm()
+        else:
+            form = JogadorForm(instance=p.jogador)
+    elif request.method == 'POST':
+        p = Perguntas(request)
+        if p.tem_jogador and request.POST['email'] == p.jogador.email:
+            form = JogadorForm(request.POST, instance=p.jogador)
+        else:
+            form = JogadorForm(request.POST)
+        if form.is_valid():
+            jogador = form.save(commit=False)
+            if not jogador.melhor_tempo or p.tempo_final_raw < jogador.melhor_tempo:
+                jogador.melhor_tempo = p.tempo_final_raw
+            jogador.save()
+            return redirect('ranking')
     return render(request, 'trivia/sucesso.html', {
         'acertos': p.sucessos,
         'total': p.n_perguntas,
-        'tempo': p.tempo_final
+        'tempo': p.tempo_final,
+        'form': form,
     })
+
 
 def falhou(request):
     pass

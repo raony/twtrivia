@@ -22,3 +22,21 @@ class Resposta(models.Model):
 
     def __unicode__(self):
         return self.texto
+
+class Jogador(models.Model):
+    PAPEIS = (
+        (0, 'CIO/CTO'),
+        (1, 'Consultor'),
+        (2, 'Gerente'),
+        (3, 'Diretor'),
+        (4, 'VP'),
+        (5, 'Outro'),
+    )
+    nome = models.CharField(max_length=255)
+    sobrenome = models.CharField(max_length=255)
+    email = models.EmailField(max_length=255)
+    telefone = models.CharField(max_length=255)
+    cidade = models.CharField(max_length=255)
+    empresa = models.CharField(max_length=255)
+    papel = models.IntegerField(choices=PAPEIS)
+    melhor_tempo = models.IntegerField()
