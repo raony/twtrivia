@@ -121,25 +121,25 @@ def reset(request):
     return redirect('home')
 
 def sucesso(request):
+    p = Perguntas(request)
     if request.method == 'GET':
-        p = Perguntas(request)
         if not p.acabou():
             return redirect('perguntas')
-        if not p.tem_jogador:
-            form = JogadorForm()
-        else:
+        if p.tem_jogador:
             form = JogadorForm(instance=p.jogador)
-    elif request.method == 'POST':
-        p = Perguntas(request)
-        if p.tem_jogador and request.POST['email'] == p.jogador.email:
-            form = JogadorForm(request.POST, instance=p.jogador)
         else:
+            form = JogadorForm()
+    elif request.method == 'POST':
+        try:
+            form = JogadorForm(request.POST, instance=Jogador.objects.get(email=request.POST['email']))
+        except Jogador.DoesNotExist:
             form = JogadorForm(request.POST)
         if form.is_valid():
             jogador = form.save(commit=False)
             if not jogador.melhor_tempo or p.tempo_final_raw < jogador.melhor_tempo:
                 jogador.melhor_tempo = p.tempo_final_raw
             jogador.save()
+            p.jogador = jogador.pk
             return redirect('ranking')
     return render(request, 'trivia/sucesso.html', {
         'acertos': p.sucessos,
