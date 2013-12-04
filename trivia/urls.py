@@ -7,4 +7,5 @@ urlpatterns = patterns('',
     url(r'^r/$', 'trivia.views.reset', name='reset'),
     url(r'^sucesso/$', 'trivia.views.sucesso', name='sucesso'),
     url(r'^pena/$', 'trivia.views.falhou', name='falhou'),
+    url(r'^ranking/$', 'trivia.views.ranking', name='ranking'),
 )

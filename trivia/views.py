@@ -155,3 +155,8 @@ def falhou(request):
         'acertos': p.sucessos,
         'total': p.n_perguntas,
     })
+
+def ranking(request):
+    return render(request, 'trivia/ranking.html', {
+        'ranking': Jogador.objects.all().order_by('melhor_tempo')[:10],
+    })

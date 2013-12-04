@@ -1,0 +1,26 @@
+{% extends 'trivia/base.html' %}
+{% block jumbotron %}
+        <h3>Resultados</h3>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nome</th>
+              <th>Empresa</th>
+              <th>Tempo</th>
+            </tr>
+          </thead>
+          </tbody>
+          {% for jogador in ranking %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ jogador.nome_completo }}</td>
+            <td>{{ jogador.empresa }}</td>
+            <td>{{ jogador.tempo_formatado }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+
+        </table>
+        <p><a class="btn btn-lg btn-success" href="{% url 'perguntas' %}" role="button">Tentar novamente!</a></p>
+{% endblock %}
