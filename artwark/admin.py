@@ -11,4 +11,8 @@ class ArtWarkAdmin(admin.ModelAdmin):
         ImagemInline,
     ]
 
+class ParticipanteAdmin(admin.ModelAdmin):
+    list_display = ['nome', 'sobrenome', 'empresa', 'imagens']
+
 admin.site.register(ArtWark, ArtWarkAdmin)
+admin.site.register(Participante, ParticipanteAdmin)
