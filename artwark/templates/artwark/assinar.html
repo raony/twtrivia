@@ -1,0 +1,19 @@
+{% extends 'trivia/base.html' %}
+{% block jumbotron %}
+        <h3>Assine sua participação e concorra a um brinde!</h3>
+        <form class="form-horizontal" role="form" method="post">
+          {% csrf_token %}
+          {% for field in form %}
+          <div class="form-group{% if field.errors %} has-error{% endif %}">
+            <label for="{{ field.id_for_label }}" class="col-sm-2 control-label text-right">{{ field.label }}</label>
+            <div class="col-sm-10">
+              {{ field }}
+              {% for erro in field.errors %}
+              <em class="error pull-left text-danger">{{ erro }}</em>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-success">Assinar!</button>
+        </form>
+{% endblock %}

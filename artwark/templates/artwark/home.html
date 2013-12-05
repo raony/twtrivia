@@ -1,0 +1,9 @@
+{% extends 'artwark/base.html' %}
+{% block jumbotron %}
+  <div class="row">
+    <h3 class="col-sm-8">Desenhe a imagem abaixo num post-it e cole na posição</h3>
+    <h1 class="col-sm-4">{{ img.linha }}{{ img.coluna }}</h1>
+  </div>
+  <p><img src="{{ img.arquivo.url }}"></p>
+  <p><a class="btn btn-lg btn-success" href="{% url 'artwark_assinar' %}" role="button">Acabei!</a></p>
+{% endblock %}
