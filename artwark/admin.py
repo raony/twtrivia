@@ -1,5 +1,5 @@
 from django.contrib import admin
-from artwark.models import ArtWark, Imagem
+from artwark.models import ArtWark, Imagem, Participante
 
 # Register your models here.
 
